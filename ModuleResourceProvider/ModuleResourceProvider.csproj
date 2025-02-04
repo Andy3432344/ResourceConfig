@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\depends\CatConfig\CatConfig\CatConfig.csproj" />
+    <ProjectReference Include="..\ResourceConfig\ResourceConfig.csproj" />
   </ItemGroup>
 
 </Project>

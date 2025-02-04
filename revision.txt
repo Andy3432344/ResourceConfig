@@ -1,2 +1,8 @@
 rev change
 r1  Initial commit
+r2  External code can be accessed using the ExternalProcessor which will look in the cudir/"exo" directory for plugins
+r2  A plugin is a directory that contains one or more library (*.dll) files which contains one or more Types with names that begin with 'ResExtern'
+r2  In these objects any method or property decorated with the 'Extern' attribute will be available in the res://exo namespace under a name matching
+r2  the Type name starting after 'ResExtern'.  Example; a class named ResExternEmployee which contains a method called 'GetHireDate' which is decorated with the 'Extern' attribute
+r2  this method would be available at: res://exo/Employee/GetHireDate/{EmployeeId}/ if (and only if) the module name (i.e. "Employee") is listed in the exo.mod config file that is read in the 
+r2  Constructor of the ExternalProcessor

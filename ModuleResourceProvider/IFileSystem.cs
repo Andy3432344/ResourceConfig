@@ -8,3 +8,4 @@ public interface IFileSystem
     IEnumerable<string> GetDirectories(string path);
     IEnumerable<string> GetDirectoryContents(string path);
 }
+
