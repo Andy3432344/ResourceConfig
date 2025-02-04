@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		revision.txt = revision.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceConfig.Terminal", "ResourceConfig.Terminal\ResourceConfig.Terminal.csproj", "{170FC93B-CC84-490C-91E3-195332F7E493}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{B32A9142-99A1-4A55-BF3A-D766AF7F4A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32A9142-99A1-4A55-BF3A-D766AF7F4A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32A9142-99A1-4A55-BF3A-D766AF7F4A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170FC93B-CC84-490C-91E3-195332F7E493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170FC93B-CC84-490C-91E3-195332F7E493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170FC93B-CC84-490C-91E3-195332F7E493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170FC93B-CC84-490C-91E3-195332F7E493}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

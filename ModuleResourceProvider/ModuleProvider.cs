@@ -9,6 +9,8 @@ public class ModuleProvider : IResourceProvider
     private const string mod = "mod";
     private NoValue noValue = new();
 
+    private Dictionary<string, string> imports = new(StringComparer.OrdinalIgnoreCase);
+
 
     private readonly IUnitRecord library;
     private readonly IFileSystem fs;
@@ -33,15 +35,23 @@ public class ModuleProvider : IResourceProvider
 
     private IUnitRecord GetModuleLibrary(IUnitRecord config)
     {
-        var imports = config["imports"] as IUnitArray;
-        if (imports == null)
-            imports = new NoArray();
+
+        var import = config["import"] as IUnitRecord;
+        if (import == null)
+            import = new NoRecord();
 
         var exports = config["exports"] as IUnitArray;
         if (exports == null)
             exports = new NoArray();
 
         //do things with import/export items....
+
+        foreach (var field in import.FieldNames)
+        {
+            var imported = import[field] as IUnitValue;
+            imports.TryAdd(field, imported?.Value ?? $"No-{field}-Value");
+        }
+
 
         return config["library"] as IUnitRecord ??
             new NoRecord();
@@ -61,12 +71,15 @@ public class ModuleProvider : IResourceProvider
     public IUnit GetResource(int id, UnitPath path)
     {
         string name = path[0];
+        string[] args = [];
+        if (path.Length > 1)
+            args = path[1..];
 
-        var func = library[name] as IDelayedUnit;
-        if (func == null)
-            return noValue;
+        var unit = library[name];
 
+        if (unit is IDelayedUnit func)
+            return library[func](args);
 
-        return library[func](path[1..]);
+        return unit;
     }
 }
