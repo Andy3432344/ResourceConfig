@@ -1,85 +1,64 @@
-﻿using System.Text;
-using CatConfig;
-using CatConfig.CclParser;
-using CatConfig.CclUnit;
+﻿using CatConfig;
+
 namespace ModuleResourceProvider;
 
-public class ModuleProvider : IResourceProvider
+public class ModuleProvider : IModuleProvider
 {
-    private const string mod = "mod";
-    private NoValue noValue = new();
-
-    private Dictionary<string, string> imports = new(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, string> imports = new(StringComparer.OrdinalIgnoreCase);
+	private readonly IUnit unit;
 
 
-    private readonly IUnitRecord library;
-    private readonly IFileSystem fs;
+	public ModuleProvider(string name, Dictionary<string, string> imports, IUnit unit)
+	{
+		foreach (string import in imports.Keys)
+			this.imports.Add(import, imports[import]);
+		UnitText = name;
+		Imports = imports.Keys.ToArray();
+		this.unit = unit;
 
-    public ModuleProvider(string path, IFileSystem fs)
-    {
-        string ccl = GetFileContent(fs, path);
-        var parser = Parser.FromContent("", ccl);
-        var unit = parser.ParseContent("", ccl);
-        var config = unit as IUnitRecord
-            ?? new NoRecord();
+		Exports = unit switch
+		{
+			IUnitValue vUnit => [vUnit.Value],
+			IUnitArray aUnit => Enumerable.Range(0, aUnit.Elements.Length).Select(i => i.ToString()).ToArray(),
+			IUnitRecord rUnit => rUnit.FieldNames,
+			_ => [],
+		};
 
-        ResourceName = (config["module"] as IUnitValue)?.Value ?? "NoModule";
-        library = GetModuleLibrary(config);
+		if (unit is IUnitRecord record)
+			if (record["import"] is IUnitRecord import)
+				foreach (var field in import.FieldNames)
+					imports[field] = (import[field] as IUnitValue)?.Value ?? $"No-{field}-Value";
 
-        this.fs = fs;
-    }
+	}
 
-
-    public string DataFormat => mod;
-    public string ResourceName { get; }
-
-    private IUnitRecord GetModuleLibrary(IUnitRecord config)
-    {
-
-        var import = config["import"] as IUnitRecord;
-        if (import == null)
-            import = new NoRecord();
-
-        var exports = config["exports"] as IUnitArray;
-        if (exports == null)
-            exports = new NoArray();
-
-        //do things with import/export items....
-
-        foreach (var field in import.FieldNames)
-        {
-            var imported = import[field] as IUnitValue;
-            imports.TryAdd(field, imported?.Value ?? $"No-{field}-Value");
-        }
+	public string this[string import]
+	{
+		get => imports.GetValueOrDefault(import, "");
+		set
+		{
+			if (imports.ContainsKey(import))
+				imports[import] = value;
+		}
+	}
 
 
-        return config["library"] as IUnitRecord ??
-            new NoRecord();
-    }
+	public string UnitText { get; }
+	public string[] Imports { get; }
+	public string[] Exports { get; }
 
-    private static string GetFileContent(IFileSystem fs, string path)
-    {
-        var file = fs.GetFileAtPath(path);
-        byte[] data = new byte[file.Length];
+	public IEnumerable<IModuleProvider> Descend(string export)
+	{
+		if (Exports.Contains(export, StringComparer.OrdinalIgnoreCase))
+			if (unit is IUnitRecord record)
+				return ModuleProviderHelpers
+				.GetSubUnits(record[export]).Select(u => new ModuleProvider(export, imports, u));
+			else if (unit is IUnitArray array && int.TryParse(export, out var index))
+				return ModuleProviderHelpers
+				.GetSubUnits(array.Elements[index]).Select(u => new ModuleProvider($"({UnitText}[{export}]", imports, u));
 
-        int length = (int)long.Clamp(file.Length, 0, Int32.MaxValue);
-        file.Read(data, 0, length);
-        string ccl = UTF8Encoding.UTF8.GetString(data);
-        return ccl;
-    }
+		if (unit is IUnitValue uVal)
+			return [new ModuleProvider(uVal.Value, imports, new NoValue())];
 
-    public IUnit GetResource(int id, UnitPath path)
-    {
-        string name = path[0];
-        string[] args = [];
-        if (path.Length > 1)
-            args = path[1..];
-
-        var unit = library[name];
-
-        if (unit is IDelayedUnit func)
-            return library[func](args);
-
-        return unit;
-    }
+		return [];
+	}
 }

@@ -4,11 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Title>Resource Config</Title>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\depends\CatConfig\CatConfig\CatConfig.csproj" />
+    <ProjectReference Include="..\ResourceConfig\ResourceConfig.csproj" />
   </ItemGroup>
 
 </Project>

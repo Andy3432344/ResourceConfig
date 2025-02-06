@@ -11,7 +11,6 @@ public class ExternalProcessor : IDelayedProcessor
 {
     private const string mod = "mod";
 
-    private readonly string[] AllowedModules;
     private readonly Dictionary<string, Dictionary<string, Func<string[], string>>> functions = new(StringComparer.OrdinalIgnoreCase);
 
     public ExternalProcessor(IFileSystem fs)
