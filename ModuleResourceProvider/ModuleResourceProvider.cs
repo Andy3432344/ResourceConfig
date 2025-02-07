@@ -41,6 +41,7 @@ public class ModuleResourceProvider : IResourceProvider, IModuleProvider
 		library = config["library"] as IUnitRecord ??
 			new NoRecord();
 
+		ResourceEngine.RegisterProvider(this);
 	}
 
 
@@ -93,13 +94,11 @@ public class ModuleResourceProvider : IResourceProvider, IModuleProvider
 	public IUnit GetResource(int id, UnitPath path)
 	{
 		IUnit unit = new NoValue();
-		//if (resourceType == NoType)
-		//	unit = GetSurfaceNode(path);
-		//else
-		//{
-
 		var processor = Modular.GetModuleProcessor(resourceType);
-		if (processor != null)
+
+		if (processor == null)
+			unit = GetSurfaceNode(path);
+		else
 		{
 			var import = config["import"] as IUnitRecord;
 			Dictionary<string, IUnit> arguments = new(StringComparer.OrdinalIgnoreCase);
@@ -142,10 +141,7 @@ public class ModuleResourceProvider : IResourceProvider, IModuleProvider
 			}
 
 			unit = processor.ProcessModule(module, path[index..]);
-
 		}
-		else
-			return GetSurfaceNode(path);
 
 
 

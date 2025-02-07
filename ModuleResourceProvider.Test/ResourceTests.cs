@@ -36,7 +36,7 @@ public class ResourceTests
 
 		Dictionary<string, TestFileStream> files = new()
 		{
-			{ "mod.mod", mod },
+			{ ".mod", mod },
 			{ "std.mod", std },
 			{"Test_ResourceModule.mod",test }
 		};

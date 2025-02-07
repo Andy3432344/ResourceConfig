@@ -1,14 +1,20 @@
 rev change
 r1	Initial commit
-r2	External code can be accessed using the ExternalProcessor which will look in the cudir/"exo" directory for plugins
+r2	External code can be accessed using the ExternalProcessor which will look in the cudir/"ext" directory for plugins
 r2	A plugin is a directory that contains one or more library (*.dll) files which contains one or more Types with names that begin with 'ResExtern'
-r2	In these objects any method or property decorated with the 'Extern' attribute will be available in the res://exo namespace under a name matching
+r2	In these objects any method or property decorated with the 'Extern' attribute will be available in the res://ext namespace under a name matching
 r2	the Type name starting after 'ResExtern'.  Example; a class named ResExternEmployee which contains a method called 'GetHireDate' which is 
-r2	decorated with the 'Extern' attribute this method would be available at: res://exo/Employee/GetHireDate/{EmployeeId}/ if (and only if) the module name 
-r2	(i.e. "Employee") is listed in the exo.mod config file that is read in the Constructor of the ExternalProcessor
+r2	decorated with the 'Extern' attribute this method would be available at: res://ext/Employee/GetHireDate/{EmployeeId}/ if (and only if) the module name 
+r2	(i.e. "Employee") is listed in the ext.mod config file that is read in the Constructor of the ExternalProcessor
 r3	Narrowed revision 2 text
 r3	DelayedRecord class created implements IUnitRecord and serves as a wrapper for the same, its job is to pass down the "import" record for in-scope values
 r3	Fixed ResourceFetchedToDeterminUnitValue() test and created LoadedModulesResolvedByName() test which calls a (test) module which imports another (std) module and is able
 r3	to access units of the std module without having to refer the std module again
 r3	Purpose is to allow custom, effectful processing of a resource - Can be used to get a "reference" to a module and only later resolve the units using 'import' values that 
 r3	were passed in at creation time and/or any time after.
+r4	All Processors and Providers should register themselves as a part of their constructor
+r4	Created Environment static class with method to 'Start' using IFileSystem
+r4	IFileSystem moved to ResourceConfig 
+r4	IFileSystem GetNewBase(path)-> IFileSystem method, this should return an object that points to a subdirectory of the original IFIleSytem base path indicated by the path arg
+r4	Rnamed ExternalProcessor to ExternalResourceProvider, new ExternalResourceProcessor created to implement IDelayedProcessor 
+r4	DataFormat for accessing external resources changed from 'exo' to 'ext'
