@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.AccessControl;
+using System.Text;
 using CatConfig;
 using CatConfig.CclParser;
 using CatConfig.CclUnit;
@@ -7,7 +8,6 @@ public class ModuleProcessor : IDelayedProcessor
 {
 	private const string mod = "mod";
 	private const string res = "res";
-	private const string modules = "modules";
 	private readonly IUnitRecord config;
 	private readonly IFileSystem fs;
 
@@ -16,7 +16,8 @@ public class ModuleProcessor : IDelayedProcessor
 
 	public ModuleProcessor(IFileSystem fs)
 	{
-		string ccl = GetFileContent(fs, $"{mod}.{mod}");
+		fs = fs.GetNewBase(mod);
+		string ccl = GetFileContent(fs, $".{mod}");
 		var parser = Parser.FromContent("", ccl);
 		var unit = parser.ParseContent("", ccl);
 		config = unit as IUnitRecord
@@ -28,12 +29,12 @@ public class ModuleProcessor : IDelayedProcessor
 
 	private void setup()
 	{
-		var modes = config[modules];
+		var modules = config["modules"];
 		List<string> mods = new();
 
-		if (modes is IUnitArray m)
+		if (modules is IUnitArray m)
 			mods.AddRange(m.Elements.Select(e => (e as IUnitValue)?.Value ?? ""));
-		else if (modes is IUnitValue unit)
+		else if (modules is IUnitValue unit)
 			mods.Add(unit.Value);
 
 
@@ -41,10 +42,7 @@ public class ModuleProcessor : IDelayedProcessor
 		{
 			var filename = config[mod] as IUnitValue;
 			if (filename != null)
-			{
-				var module = new ModuleResourceProvider(filename.Value, fs);
-				ResourceEngine.RegisterProvider(module);
-			}
+				_ = new ModuleResourceProvider(filename.Value, fs);
 		}
 
 
