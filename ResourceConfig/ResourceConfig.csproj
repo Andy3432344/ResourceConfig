@@ -7,4 +7,8 @@
     <Title>Resource Config</Title>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\depends\CatConfig\CatConfig\CatConfig.csproj" />
+  </ItemGroup>
+
 </Project>
