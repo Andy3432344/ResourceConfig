@@ -2,11 +2,11 @@
 
 namespace ModuleResourceProvider;
 
-public interface IModuleProvider
+public interface IModuleWalker
 {
 	string UnitText { get; }
 	string[] Imports { get; }
 	string[] Exports { get; }
 	string this[string import] { get; set; }
-	IEnumerable<IModuleProvider> Descend(string export);
+	IEnumerable<IModuleWalker> Descend(string export);
 }

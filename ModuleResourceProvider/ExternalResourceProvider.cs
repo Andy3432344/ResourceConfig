@@ -17,7 +17,7 @@ public class ExternalResourceProvider : IResourceProvider
 	{
 		string moduleFile = fs.ReadAllText($"{ResourceName}.{mod}");
 		var parser = Parser.FromContent("", moduleFile);
-		var modRecord = parser.ParseContent("", moduleFile) as IUnitRecord;
+		var modRecord = parser.ParseContent("module", moduleFile) as IUnitRecord;
 
 		if (modRecord != null)
 			SetupExternalResources(fs, modRecord);
@@ -27,7 +27,7 @@ public class ExternalResourceProvider : IResourceProvider
 
 	private void SetupExternalResources(IFileSystem fs, IUnitRecord modRecord)
 	{
-		var modules = modRecord["modules"];
+		var modules = modRecord["exports"];
 		List<IUnit> units = new();
 		if (modules is IUnitArray a)
 			units = a.Elements.ToList();
@@ -76,7 +76,9 @@ public class ExternalResourceProvider : IResourceProvider
 				if (!functions.TryGetValue(mod.Name, out var funcs))
 					functions[mod.Name] = funcs = new(StringComparer.OrdinalIgnoreCase);
 
-				foreach (var ext in mod.GetMembers().Where(m => m.CustomAttributes.Any(a => a.AttributeType == typeof(ExternAttribute))))
+				string[] allowedAttributes = ["ExternAttribute", "Extern"];
+
+				foreach (var ext in mod.GetMembers().Where(m => m.CustomAttributes.Any(a => allowedAttributes.Contains(a.AttributeType.Name,StringComparer.OrdinalIgnoreCase))))
 					funcs.Add(ext.Name, args => mod.GetMethod(ext.Name)?.Invoke(plugin, args)?.ToString() ?? "");
 			}
 			catch { }

@@ -4,7 +4,7 @@ using CatConfig;
 using CatConfig.CclParser;
 using CatConfig.CclUnit;
 namespace ModuleResourceProvider;
-public class ModuleProcessor : IDelayedProcessor
+public class DelayedModuleProcessor : IDelayedProcessor
 {
 	private const string mod = "mod";
 	private const string res = "res";
@@ -14,7 +14,7 @@ public class ModuleProcessor : IDelayedProcessor
 	public string Name => mod;
 	public string ProtocolSchema => res;
 
-	public ModuleProcessor(IFileSystem fs)
+	public DelayedModuleProcessor(IFileSystem fs)
 	{
 		fs = fs.GetNewBase(mod);
 		string ccl = GetFileContent(fs, $".{mod}");
@@ -29,7 +29,7 @@ public class ModuleProcessor : IDelayedProcessor
 
 	private void setup()
 	{
-		var modules = config["modules"];
+		var modules = config["exports"];
 		List<string> mods = new();
 
 		if (modules is IUnitArray m)
@@ -38,10 +38,13 @@ public class ModuleProcessor : IDelayedProcessor
 			mods.Add(unit.Value);
 
 
-		foreach (var mod in mods)
-		{
-			var filename = config[mod] as IUnitValue;
-			if (filename != null)
+		var library = config["library"];
+
+		if (library is IUnitRecord lib)
+			foreach (var mod in mods)
+			{
+				var filename = lib[mod] as IUnitValue;
+				if (filename != null)
 				_ = new ModuleResourceProvider(filename.Value, fs);
 		}
 

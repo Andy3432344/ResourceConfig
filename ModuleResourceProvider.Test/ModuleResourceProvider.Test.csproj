@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ModuleResourceProvider\ModuleResourceProvider.csproj" />
-    <ProjectReference Include="..\ResourceProcessor\ResourceProcessor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

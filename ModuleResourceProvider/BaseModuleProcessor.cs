@@ -1,18 +1,7 @@
 ﻿using CatConfig;
-using ModuleResourceProvider;
 using System.Reflection;
 
-namespace ResourceProcessor;
-
-public interface IResource
-{
-	string Name { get; }
-	IResource[] Resources { get; }
-}
-
-
-
-public record Resource(string Name, IResource[] Resources) : IResource;
+namespace ModuleResourceProvider;
 
 public abstract class BaseModuleProcessor : IResourceProcessor
 {
@@ -22,7 +11,7 @@ public abstract class BaseModuleProcessor : IResourceProcessor
 		Modular.RegisterModuleProvider(this);
 	}
 
-	public abstract string ResourceName{ get; }
+	public abstract string ResourceName { get; }
 	public abstract string ProcessorType { get; }
 
 	public virtual IUnit ProcessModule(IUnitRecord record, params object[] args)
@@ -46,3 +35,13 @@ public abstract class BaseModuleProcessor : IResourceProcessor
 
 }
 
+
+public interface IResource
+{
+	string Name { get; }
+	IResource[] Resources { get; }
+}
+
+
+
+public record Resource(string Name, IResource[] Resources) : IResource;

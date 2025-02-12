@@ -18,3 +18,7 @@ r4	IFileSystem moved to ResourceConfig
 r4	IFileSystem GetNewBase(path)-> IFileSystem method, this should return an object that points to a subdirectory of the original IFIleSytem base path indicated by the path arg
 r4	Rnamed ExternalProcessor to ExternalResourceProvider, new ExternalResourceProcessor created to implement IDelayedProcessor 
 r4	DataFormat for accessing external resources changed from 'exo' to 'ext'
+r5	Environment renamed to ResourceEnvironment
+r5	ModuleProcessor renamed to DelayedModuleProcessor 
+r5	ResourceProcessor moved into ModuleResourceProvider project
+r5	Base class created for ResourceProcessor to handle registration and loading of module library 

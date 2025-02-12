@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ModuleResourceProvider;
 
-public static class Environment
+public static class ResourceEnvironment
 {
 	public static void Start(IFileSystem fs)
 	{
 		_ = new ExternalResourceProcessor(fs);
-		_ = new ModuleProcessor(fs);
+		_ = new DelayedModuleProcessor(fs);
 	}
 }

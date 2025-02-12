@@ -8,7 +8,7 @@ using static ModuleResourceProvider.ModuleProviderHelpers;
 
 namespace ModuleResourceProvider;
 
-public class ModuleResourceProvider : IResourceProvider, IModuleProvider
+public class ModuleResourceProvider : IResourceProvider, IModuleWalker
 {
 	private const string mod = nameof(mod);
 	private const string NoType = nameof(NoType);
@@ -66,7 +66,7 @@ public class ModuleResourceProvider : IResourceProvider, IModuleProvider
 				imports[import] = value;
 		}
 	}
-	public IEnumerable<IModuleProvider> Descend(string export)
+	public IEnumerable<IModuleWalker> Descend(string export)
 	{
 		var exUnit = library[export];
 
@@ -76,7 +76,7 @@ public class ModuleResourceProvider : IResourceProvider, IModuleProvider
 		var units = ModuleProviderHelpers.GetSubUnits(exUnit);
 
 		return units.Select(u =>
-			new ModuleProvider(export, imports, u));
+			new ModuleWalker(export, imports, u));
 	}
 
 

@@ -24,7 +24,7 @@ public class ResourceTests
   """;
 
 	TestProcessor processor = new();
-	ModuleProcessor modProc;
+	DelayedModuleProcessor modProc;
 	TestModuleProcessor testProc = new();
 
 	public ResourceTests()

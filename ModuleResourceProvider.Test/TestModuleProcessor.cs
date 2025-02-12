@@ -1,6 +1,4 @@
-﻿using ResourceProcessor;
-
-namespace ModuleResourceProvider.Test;
+﻿namespace ModuleResourceProvider.Test;
 
 public class TestModuleProcessor : BaseModuleProcessor
 {

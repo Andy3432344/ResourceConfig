@@ -2,16 +2,16 @@
 
 namespace ModuleResourceProvider;
 
-public class ModuleProvider : IModuleProvider
+public class ModuleWalker : IModuleWalker
 {
-	private readonly Dictionary<string, string> imports = new(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, string> import = new(StringComparer.OrdinalIgnoreCase);
 	private readonly IUnit unit;
 
 
-	public ModuleProvider(string name, Dictionary<string, string> imports, IUnit unit)
+	public ModuleWalker(string name, Dictionary<string, string> imports, IUnit unit)
 	{
 		foreach (string import in imports.Keys)
-			this.imports.Add(import, imports[import]);
+			this.import.Add(import, imports[import]);
 		UnitText = name;
 		Imports = imports.Keys.ToArray();
 		this.unit = unit;
@@ -33,11 +33,11 @@ public class ModuleProvider : IModuleProvider
 
 	public string this[string import]
 	{
-		get => imports.GetValueOrDefault(import, "");
+		get => this.import.GetValueOrDefault(import, "");
 		set
 		{
-			if (imports.ContainsKey(import))
-				imports[import] = value;
+			if (this.import.ContainsKey(import))
+				this.import[import] = value;
 		}
 	}
 
@@ -46,19 +46,21 @@ public class ModuleProvider : IModuleProvider
 	public string[] Imports { get; }
 	public string[] Exports { get; }
 
-	public IEnumerable<IModuleProvider> Descend(string export)
+	public IEnumerable<IModuleWalker> Descend(string export)
 	{
 		if (Exports.Contains(export, StringComparer.OrdinalIgnoreCase))
 			if (unit is IUnitRecord record)
 				return ModuleProviderHelpers
-				.GetSubUnits(record[export]).Select(u => new ModuleProvider(export, imports, u));
+				.GetSubUnits(record[export]).Select(u => new ModuleWalker((u as IUnitValue)?.Value ?? (u as IUnitRecord)?.Name ?? "", import, u));
 			else if (unit is IUnitArray array && int.TryParse(export, out var index))
 				return ModuleProviderHelpers
-				.GetSubUnits(array.Elements[index]).Select(u => new ModuleProvider($"({UnitText}[{export}]", imports, u));
+				.GetSubUnits(array.Elements[index]).Select(u => new ModuleWalker($"({UnitText}[{export}]", import, u));
 
 		if (unit is IUnitValue uVal)
-			return [new ModuleProvider(uVal.Value, imports, new NoValue())];
+			return [new ModuleWalker(uVal.Value, import, new NoValue())];
+
 
 		return [];
 	}
+
 }
